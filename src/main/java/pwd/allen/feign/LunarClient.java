@@ -10,6 +10,7 @@ import lombok.Data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author 门那粒沙 au
@@ -42,5 +43,7 @@ public interface LunarClient {
         LunarClient.LunarResult result = lunarClient.getLunar(date);
 
         System.out.println(result);
+
+        System.out.println(UUID.randomUUID());
     }
 }

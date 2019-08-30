@@ -105,6 +105,13 @@
             <version>1.18.4</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.atlassian.security/atlassian-secure-random -->
+        <dependency>
+            <groupId>com.atlassian.security</groupId>
+            <artifactId>atlassian-secure-random</artifactId>
+            <version>3.2.10</version>
+        </dependency>
+
     </dependencies>
 
 
