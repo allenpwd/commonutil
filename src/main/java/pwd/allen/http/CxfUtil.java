@@ -1,4 +1,4 @@
-package http;
+package pwd.allen.http;
 
 import org.apache.cxf.helpers.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;

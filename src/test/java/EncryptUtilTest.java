@@ -1,15 +1,4 @@
-import com.atlassian.security.random.DefaultSecureRandomService;
-import com.atlassian.security.random.SecureRandomService;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.Assert.*;
 
 /**
  * @author lenovo

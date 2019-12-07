@@ -1,7 +1,8 @@
-package http;
+package pwd.allen.http;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -12,13 +13,11 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import java.util.Map;
  **/
 public class HttpUtil {
 
-    private final static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
 
     public final static String CONTENT_TYPE_JSON = "application/json;charset=utf-8";
     public final static String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
@@ -40,6 +39,20 @@ public class HttpUtil {
 
     {
         httpClientConnectionManager = new PoolingHttpClientConnectionManager();
+    }
+
+    /**
+     * 发送请求 不记录日志
+     * @param uri
+     * @param mapHeader
+     * @param param
+     * @param methodName
+     * @param contentType
+     * @return
+     * @throws IOException
+     */
+    public Map<String, Object> sendRequestWithOutLog(String uri, Map<String, String> mapHeader, Object param, String methodName, String contentType) throws IOException, URISyntaxException {
+        return sendRequest(uri, mapHeader, param, methodName, contentType);
     }
 
     /**
@@ -53,6 +66,21 @@ public class HttpUtil {
      * @throws IOException
      */
     public Map<String, Object> sendRequest(String uri, Map<String, String> mapHeader, Object param, String methodName, String contentType) throws IOException, URISyntaxException {
+        return sendRequest(uri, mapHeader, param, methodName, contentType, null, null);
+    }
+
+    /**
+     * 发送请求
+     * @param uri
+     * @param mapHeader
+     * @param param
+     * @param methodName
+     * @param contentType
+     * @return
+     * @throws IOException
+     */
+    public Map<String, Object> sendRequest(String uri, Map<String, String> mapHeader, Object param, String methodName, String contentType
+            , String respChatSetFrom, String respChatSetTo) throws IOException, URISyntaxException {
 
         Map<String, Object> mapRel = new HashMap<String, Object>();
 
@@ -127,23 +155,27 @@ public class HttpUtil {
             mapRel.put("header", resp.getAllHeaders());
 
             HttpEntity he = resp.getEntity();
-            InputStream is = he.getContent();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String str = null;
-            StringBuilder builder = new StringBuilder();
-            while ((str = br.readLine()) != null) {
-                builder.append(str);
+            String result = EntityUtils.toString(he);
+
+            try {
+                if (StringUtils.isNotEmpty(respChatSetFrom) && StringUtils.isNotEmpty(respChatSetTo)) {
+                    result =new String(result.getBytes(respChatSetFrom), respChatSetTo);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            mapRel.put("result", builder.toString());
+            mapRel.put("result", result);
 
             return mapRel;
+        } catch (Exception e) {
+            throw e;
         } finally {
             if(null!=resp) {
                 try {
                     resp.close();
                 } catch (IOException e) {
-                    log.error(e.toString());
+                    logger.error(e.getMessage(), e);
                     e.printStackTrace();
                 }
             }
@@ -154,6 +186,7 @@ public class HttpUtil {
     /**
      *
      * @param args
+     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
 
@@ -171,25 +204,7 @@ public class HttpUtil {
         mapHeader.put("Cookie", "token=eyJhbGciOiMDE2ND");
         mapRel = httpUtil.sendRequest(url, mapHeader, mapParam, HttpPost.METHOD_NAME, CONTENT_TYPE_JSON);
         JSONObject jsonObject = JSON.parseObject((String)mapRel.get("result"));
-//        System.out.println(XMLMap.get(jsonObject, "type", String.class));
-//        System.out.println(XMLMap.get(jsonObject, "data.total", Integer.class));
-
-        //测试请求xml接口
-        url = "http://www.webxml.com.cn/WebServices/TranslatorWebService.asmx";
-//        XMLMap xmlMap = new XMLMap().setAttr("method", "getEnCnTwoWayTranslator");
-//        xmlMap.setChild("body")
-//                .setAttr("Word", "你好");
-//        cont = XMLMap.loadTemplate("xmlTemplate/test2.xml", xmlMap);
-//        mapRel = httpUtil.sendRequest(url, mapHeader, cont, HttpPost.METHOD_NAME, CONTENT_TYPE_XML);
-//        Map relMap = XMLUtil2.xmlToMap((String)mapRel.get("result"), true);
-//        System.out.println(XMLMap.get(relMap, "Envelope.Body.getEnCnTwoWayTranslatorResponse.getEnCnTwoWayTranslatorResult.string", ArrayList.class));
-//
-//        //测试请求form接口
-//        url = "http://localhost:8083/form";
-//        mapRel = httpUtil.sendRequest(url, mapHeader, mapParam, HttpPost.METHOD_NAME, CONTENT_TYPE_FORM);
-//        jsonObject = JSON.parseObject((String)mapRel.get("result"));
-//        System.out.println(XMLMap.get(jsonObject, "name", String.class));
-//        System.out.println(XMLMap.get(jsonObject, "data.total", Integer.class));
+        System.out.println(jsonObject);
     }
 
 }

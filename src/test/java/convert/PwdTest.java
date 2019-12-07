@@ -1,6 +1,5 @@
 package convert;
 
-import com.alibaba.fastjson.JSON;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -28,6 +27,5 @@ public class PwdTest {
         map.put("boolean", true);
         map.put("list", list);
 
-        System.out.println(XMLUtil.json2xml(JSON.toJSONString(list)));
     }
 }
