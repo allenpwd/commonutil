@@ -8,24 +8,20 @@
     <artifactId>commonutil</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>central</id>-->
-            <!--<name>Central Repository</name>-->
-            <!--<url>https://repo.maven.apache.org/maven2</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>aliyun</id>-->
-            <!--<name>aliyun maven</name>-->
-            <!--<url>https://maven.aliyun.com/repository/central/</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-    <!--</repositories>-->
+    <repositories>
+        <repository>
+            <id>other</id>
+            <name>other maven</name>
+            <url>https://repo.spring.io/plugins-release/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
 
     <dependencies>
         <!--  -->
@@ -105,13 +101,6 @@
             <version>1.18.4</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.atlassian.security/atlassian-secure-random -->
-        <dependency>
-            <groupId>com.atlassian.security</groupId>
-            <artifactId>atlassian-secure-random</artifactId>
-            <version>3.2.14</version>
-        </dependency>
-
         <!-- SFTP -->
         <dependency>
             <groupId>com.jcraft</groupId>
@@ -126,8 +115,13 @@
             <version>2.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.atlassian.security/atlassian-secure-random -->
+        <dependency>
+            <groupId>com.atlassian.security</groupId>
+            <artifactId>atlassian-secure-random</artifactId>
+            <version>3.2.11</version>
+        </dependency>
 
     </dependencies>
-
 
 </project>

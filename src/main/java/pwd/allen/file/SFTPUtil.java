@@ -1,7 +1,9 @@
 package pwd.allen.file;
 
-import com.jcraft.jsch.*;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,7 +246,7 @@ public class SFTPUtil {
         if (srcPath != null) sftp.cd(srcPath);
         String oldPath = sftp.pwd();
         if (bytes == null) bytes = download(null, srcFileName);
-        upload(targetPath, targetFileName, new ByteInputStream(bytes, bytes.length));
+        upload(targetPath, targetFileName, new ByteArrayInputStream(bytes, 0, bytes.length));
         delete(oldPath, srcFileName);
     }
 
