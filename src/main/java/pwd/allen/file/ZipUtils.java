@@ -1,11 +1,11 @@
 package pwd.allen.file;
 
+import org.apache.commons.lang.CharSet;
+
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.*;
 
 /**
  * Zip压缩解压缩
@@ -101,15 +101,18 @@ public final class ZipUtils {
      * 解压缩
      * @param fileName
      * @param path
+     * @param charset
+     * @param filter 过滤文件，返回false则不解压
      */
-    public static void unzip(String fileName, String path) {
+    public static void unzip(String fileName, String path, Charset charset, FileFilter filter) {
         FileOutputStream fos = null;
         InputStream is = null;
         try {
-            ZipFile zf = new ZipFile(new File(fileName));
+            ZipFile zf = new ZipFile(new File(fileName), charset == null ? Charset.defaultCharset() : charset);
             Enumeration en = zf.entries();
             while (en.hasMoreElements()) {
                 ZipEntry zn = (ZipEntry) en.nextElement();
+                if (filter != null && !filter.ifDone(zn)) continue;
                 if (!zn.isDirectory()) {
                     is = zf.getInputStream(zn);
                     File f = new File(path + zn.getName());
@@ -142,11 +145,15 @@ public final class ZipUtils {
         }
     }
 
+    public interface FileFilter {
+        public boolean ifDone(ZipEntry entry);
+    }
+
     /**
      * @param args
      */
     public static void main(String[] args) {
-        zip(new String[]{"C:\\Users\\Administrator\\Desktop\\jar_test", "C:\\Users\\Administrator\\Desktop\\Turbo-Always.mp3"}, "C:\\Users\\Administrator\\Desktop\\abc.zip");
-        unzip("C:\\Users\\Administrator\\Desktop\\abc.zip", "C:\\Users\\Administrator\\Desktop\\abc\\");
+//        zip(new String[]{"C:\\Users\\Administrator\\Desktop\\问题.txt", "C:\\Users\\Administrator\\Desktop\\Turbo-Always.mp3"}, "C:\\Users\\Administrator\\Desktop\\abc.zip");
+        unzip("C:\\Users\\Administrator\\Desktop\\abc.zip", "C:\\Users\\Administrator\\Desktop\\abc\\", null, null);
     }
 }
