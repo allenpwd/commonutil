@@ -2,6 +2,7 @@ package convert;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,11 @@ public class PwdTest {
         map.put("float", 0.123);
         map.put("boolean", true);
         map.put("list", list);
+    }
 
+    @Test
+    public void test() {
+        File file = new File("C:\\Users\\Administrator\\Desktop\\abc\\git\\.git");
+        System.out.println(file.mkdirs());
     }
 }

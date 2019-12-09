@@ -1,9 +1,6 @@
 package pwd.allen.file;
 
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.*;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +10,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 /**
- * 类说明 sftp工具类
+ * sftp工具类
  */
 public class SFTPUtil {
     private transient Logger log = LoggerFactory.getLogger(this.getClass());
@@ -21,6 +18,15 @@ public class SFTPUtil {
     public ChannelSftp sftp;
 
     private Session session;
+
+    /**
+     * SFTP 服务器地址IP地址
+     */
+    private String host;
+    /**
+     * SFTP 端口
+     */
+    private int port;
     /**
      * SFTP 登录用户名
      */
@@ -33,20 +39,14 @@ public class SFTPUtil {
      * 私钥
      */
     private String privateKey;
-    /**
-     * SFTP 服务器地址IP地址
-     */
-    private String host;
-    /**
-     * SFTP 端口
-     */
-    private int port;
 
-
-    //上传文件测试
+    /**
+     * 测试
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
-        SFTPUtil util = new SFTPUtil("root", "password@123", "192.168.200.42", 22);
-        //util = new SFTPUtil("root", "123", "192.168.118.101", 22);
+        SFTPUtil util = new SFTPUtil("172.18.8.58", 22, "root", "tg123!@#");
 
         util.login();
 
@@ -58,7 +58,7 @@ public class SFTPUtil {
         File file = new File("C:\\Users\\Administrator\\Desktop\\exportExcel.xls");
         InputStream is = new FileInputStream(file);
 
-        //util.upload("/home/file","", "test_sftp.xls", is); 
+        //util.upload("/home/file","", "test_sftp.xls", is);
 
         byte[] bs = util.download("/home/file/temp", "ff80808166af0c800166af0e9c1d0000.xls");
         System.out.println(bs.length);
@@ -69,11 +69,11 @@ public class SFTPUtil {
     /**
      * 构造基于密码认证的sftp对象
      */
-    public SFTPUtil(String username, String password, String host, int port) {
-        this.username = username;
-        this.password = password;
+    public SFTPUtil(String host, int port, String username, String password) {
         this.host = host;
         this.port = port;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -89,7 +89,6 @@ public class SFTPUtil {
     public SFTPUtil() {
     }
 
-
     /**
      * 连接sftp服务器
      */
@@ -104,10 +103,47 @@ public class SFTPUtil {
         if (password != null) {
             session.setPassword(password);
         }
-        Properties config = new Properties();
-        config.put("StrictHostKeyChecking", "no");
 
-        session.setConfig(config);
+        session.setUserInfo(new UserInfo() {
+            @Override
+            public String getPassphrase() {
+                System.out.println("getPassphrase");
+                return null;
+            }
+
+            @Override
+            public String getPassword() {
+                System.out.println("getPassword");
+                return null;
+            }
+
+            @Override
+            public boolean promptPassword(String message) {
+                System.out.println("promptPassword:" + message);
+                return false;
+            }
+
+            @Override
+            public boolean promptPassphrase(String message) {
+                System.out.println("promptPassphrase:" + message);
+                return false;
+            }
+
+            @Override
+            public boolean promptYesNo(String message) {
+                System.out.println("promptYesNo:" + message);
+                return false;
+            }
+
+            @Override
+            public void showMessage(String message) {
+                System.out.println("showMessage:" + message);
+            }
+        });
+
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.setTimeout(30000);
+
         session.connect();
 
         sftp = (ChannelSftp) session.openChannel("sftp");

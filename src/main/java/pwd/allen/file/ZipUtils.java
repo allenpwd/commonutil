@@ -1,25 +1,20 @@
 package pwd.allen.file;
 
-import org.apache.commons.lang.CharSet;
+import org.apache.http.util.Asserts;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
-import java.util.zip.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Zip压缩解压缩
  *
  * @author 门那粒沙
  * @create 2019-12-07 21:25
- */
-
-/**
- *
- * @version 1.0
- * @since 2015-9-11
- * @category com.feng.util
- *
  */
 public final class ZipUtils {
 
@@ -29,7 +24,8 @@ public final class ZipUtils {
     private static int BUFFERSIZE = 2 << 10;
 
     /**
-     * 压缩
+     * 压缩指定文件或者目录
+     *
      * @param paths
      * @param fileName
      */
@@ -60,7 +56,7 @@ public final class ZipUtils {
         }
     }
 
-    public static void zipFile(File file, String relativePath, ZipOutputStream zos) {
+    private static void zipFile(File file, String relativePath, ZipOutputStream zos) {
         InputStream is = null;
         try {
             if (!file.isDirectory()) {
@@ -98,17 +94,20 @@ public final class ZipUtils {
     }
 
     /**
-     * 解压缩
-     * @param fileName
-     * @param path
-     * @param charset
-     * @param filter 过滤文件，返回false则不解压
+     * 解压指定的zip
+     * @param fileName  要解压的zip文件
+     * @param path  解压到指定的目录
+     * @param charset   zip编码 没有则系统默认
+     * @param filter 文件过滤器
      */
     public static void unzip(String fileName, String path, Charset charset, FileFilter filter) {
         FileOutputStream fos = null;
         InputStream is = null;
+        ZipFile zf = null;
+        Asserts.notEmpty(path, "path");
+        if (!path.endsWith(File.separator)) path += File.separator;
         try {
-            ZipFile zf = new ZipFile(new File(fileName), charset == null ? Charset.defaultCharset() : charset);
+            zf = new ZipFile(new File(fileName), charset == null ? Charset.defaultCharset() : charset);
             Enumeration en = zf.entries();
             while (en.hasMoreElements()) {
                 ZipEntry zn = (ZipEntry) en.nextElement();
@@ -116,15 +115,15 @@ public final class ZipUtils {
                 if (!zn.isDirectory()) {
                     is = zf.getInputStream(zn);
                     File f = new File(path + zn.getName());
-                    File file = f.getParentFile();
-                    file.mkdirs();
-                    fos = new FileOutputStream(path + zn.getName());
+                    f.getParentFile().mkdirs();
+                    fos = new FileOutputStream(f);
                     int len = 0;
                     byte bufer[] = new byte[BUFFERSIZE];
                     while (-1 != (len = is.read(bufer))) {
                         fos.write(bufer, 0, len);
                     }
-                    fos.close();
+//                    is.close();
+//                    fos.close();
                 }
             }
         } catch (ZipException e) {
@@ -133,11 +132,14 @@ public final class ZipUtils {
             e.printStackTrace();
         } finally {
             try {
-                if (null != is) {
-                    is.close();
-                }
-                if (null != fos) {
-                    fos.close();
+//                if (null != is) {
+//                    is.close();
+//                }
+//                if (null != fos) {
+//                    fos.close();
+//                }
+                if (null != zf) {
+                    zf.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -153,7 +155,7 @@ public final class ZipUtils {
      * @param args
      */
     public static void main(String[] args) {
-//        zip(new String[]{"C:\\Users\\Administrator\\Desktop\\问题.txt", "C:\\Users\\Administrator\\Desktop\\Turbo-Always.mp3"}, "C:\\Users\\Administrator\\Desktop\\abc.zip");
-        unzip("C:\\Users\\Administrator\\Desktop\\abc.zip", "C:\\Users\\Administrator\\Desktop\\abc\\", null, null);
+        zip(new String[]{"C:\\Users\\\\lenovo\\Desktop\\git", "C:\\Users\\\\lenovo\\Desktop\\eiac的xml.xml"}, "C:\\Users\\\\lenovo\\Desktop\\abc.zip");
+        unzip("C:\\Users\\lenovo\\Desktop\\abc.zip", "C:\\Users\\lenovo\\Desktop\\abc", null, null);
     }
 }
