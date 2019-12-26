@@ -3,6 +3,7 @@ package convert;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class PwdTest {
 
     @Test
     public void test() {
-        File file = new File("C:\\Users\\Administrator\\Desktop\\abc\\git\\.git");
-        System.out.println(file.mkdirs());
+        URL resource = PwdTest.class.getClassLoader().getResource("");
+        System.out.println(resource.getPath());
     }
 }

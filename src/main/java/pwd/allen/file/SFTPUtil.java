@@ -56,12 +56,13 @@ public class SFTPUtil {
         util.sftp.cd("/home/config/dubboConfig/");
 
         File file = new File("C:\\Users\\Administrator\\Desktop\\exportExcel.xls");
-        InputStream is = new FileInputStream(file);
 
-        //util.upload("/home/file","", "test_sftp.xls", is);
+//        InputStream is = new FileInputStream(file);
+//        util.upload("/home/file","", "test_sftp.xls", is);
 
-        byte[] bs = util.download("/home/file/temp", "ff80808166af0c800166af0e9c1d0000.xls");
+        byte[] bs = util.download("/home/config/dubboConfig", "bigdatatwo-dubbo.properties");
         System.out.println(bs.length);
+
 
         util.logout();
     }
@@ -229,7 +230,7 @@ public class SFTPUtil {
      * @param deleteFile 要删除的文件
      */
     public void delete(String directory, String deleteFile) throws SftpException {
-        if (directory != null) sftp.cd(directory);
+        if (directory != null && !"".equals(directory)) sftp.cd(directory);
         sftp.rm(deleteFile);
     }
 
