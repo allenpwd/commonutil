@@ -1,15 +1,10 @@
 package pwd.allen.ftp;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,23 +38,54 @@ public class FTPUtil {
     /**
      * 初始化ftp服务器
      */
-    public void init() {
+    public void init() throws IOException {
+        if (ftpClient != null && ftpClient.isConnected() && ftpClient.isAvailable()) {
+            ftpClient.enterLocalPassiveMode(); // 防止假卡死
+            return;
+        }
         ftpClient = new FTPClient();
         ftpClient.setControlEncoding("utf-8");
-        try {
-            System.out.println("connecting...ftp服务器:" + hostname + ":" + port);
-            ftpClient.connect(hostname, port); //连接ftp服务器
-            ftpClient.login(username, password); //登录ftp服务器
-            int replyCode = ftpClient.getReplyCode(); //是否成功登录服务器
-            if (!FTPReply.isPositiveCompletion(replyCode)) {
-                System.out.println("connect failed...ftp服务器:" + hostname + ":" + port);
-            }
-            System.out.println("connect successful...ftp服务器:" + hostname + ":" + port);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        ftpClient.setConnectTimeout(1000 * 10);
+
+        System.out.println("connecting...ftp服务器:" + hostname + ":" + port);
+        ftpClient.connect(hostname, port); //连接ftp服务器
+        ftpClient.login(username, password); //登录ftp服务器
+        int replyCode = ftpClient.getReplyCode(); //是否成功登录服务器
+        if (!FTPReply.isPositiveCompletion(replyCode)) {
+            System.out.println("connect failed...ftp服务器:" + hostname + ":" + port);
         }
+        System.out.println("connect successful...ftp服务器:" + hostname + ":" + port);
+
+        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+        //设置Linux环境:如果ftp服务器部署在linux系统中，此处注释应该打开，若为Windows服务器则不需要
+        FTPClientConfig conf = new FTPClientConfig(FTPClientConfig.SYST_UNIX);
+        ftpClient.configure(conf);
+
+        ftpClient.enterLocalPassiveMode(); // 防止假卡死
+        ftpClient.setRemoteVerificationEnabled(false);
+        ftpClient.setConnectTimeout(10 * 1000); // 登录十秒超时
+        ftpClient.setDataTimeout(1 * 60 * 1000); // 获取数据超时 一分钟
+    }
+
+    public byte[] downloadFile(String pathname, String filename) throws IOException {
+        System.out.println("开始下载文件");
+        //切换FTP目录
+        if (StringUtils.isNotEmpty(pathname)) {
+            ftpClient.changeWorkingDirectory(pathname);
+        }
+        FTPFile[] ftpFiles = ftpClient.listFiles();
+        for (FTPFile file : ftpFiles) {
+            if (filename.equalsIgnoreCase(file.getName())) {
+//                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                boolean flag = ftpClient.retrieveFile(file.getName(), byteArrayOutputStream);
+                if (flag) {
+                    return byteArrayOutputStream.toByteArray();
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -71,43 +97,19 @@ public class FTPUtil {
      * @return
      */
     public boolean downloadFile(String pathname, String filename, String localpath) {
-//        ftpClient.enterLocalPassiveMode();
         boolean flag = false;
-        OutputStream os = null;
         if (localpath == null) localpath = "";
         if (!localpath.endsWith(File.separator)) localpath += File.separator;
         try {
-            System.out.println("开始下载文件");
-            //切换FTP目录
-            if (StringUtils.isNotEmpty(pathname)) {
-                ftpClient.changeWorkingDirectory(pathname);
-            }
-            FTPFile[] ftpFiles = ftpClient.listFiles();
-            for (FTPFile file : ftpFiles) {
-                if (filename.equalsIgnoreCase(file.getName())) {
-                    File localFile = new File(localpath + file.getName());
-                    os = new FileOutputStream(localFile);
-                    ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                    flag = ftpClient.retrieveFile(file.getName(), os);
-                    if (!flag) {
-                        System.out.println("下载文件失败");
-                    } else {
-                        System.out.println("下载文件成功");
-                    }
-                    os.close();
-                }
+            byte[] bytes = downloadFile(pathname, filename);
+            if (bytes != null) {
+                File localFile = new File(localpath + filename);
+                new FileOutputStream(localFile).write(bytes, 0, bytes.length);
+                flag = true;
             }
         } catch (Exception e) {
             System.out.println("下载文件失败" + e.getMessage());
             e.printStackTrace();
-        } finally {
-            if (null != os) {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return flag;
     }
@@ -186,17 +188,20 @@ public class FTPUtil {
     }
 
     public void destroy() {
-        try {
-            ftpClient.logout();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (ftpClient.isConnected()) {
+        if (ftpClient != null) {
             try {
-                ftpClient.disconnect();
+                ftpClient.logout();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+        ftpClient = null;
     }
 }

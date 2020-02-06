@@ -27,8 +27,10 @@ public class FTPUtilTest {
 
     @Test
     public void downloadFile() {
-        System.out.println(ftpUtil.downloadFile("", "abc.txt", "C:\\Users\\Administrator\\Desktop"));
-        System.out.println(ftpUtil.downloadFile("", "abc.txt", "C:\\Users\\Administrator\\Desktop"));
+        String localPath = "C:\\Users\\Administrator\\Desktop";
+        System.out.println(ftpUtil.downloadFile("", "abc.txt", localPath));
+        System.out.println(ftpUtil.downloadFile("", "abc.doc", localPath));
+        System.out.println(ftpUtil.downloadFile("", "guns.pdf", localPath));
     }
 
     @Test
