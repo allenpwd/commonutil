@@ -32,7 +32,5 @@ public class PwdTest {
 
     @Test
     public void test() {
-        URL resource = PwdTest.class.getClassLoader().getResource("");
-        System.out.println(resource.getPath());
     }
 }
