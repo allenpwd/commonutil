@@ -4,9 +4,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author 门那粒沙
@@ -32,5 +31,9 @@ public class PwdTest {
 
     @Test
     public void test() {
+        Calendar c = Calendar.getInstance();
+        System.out.println(c.getTime().getHours());
+
+        System.out.println(new SimpleDateFormat("yyyyMMdd0SSS").format(new Date()));
     }
 }

@@ -6,19 +6,38 @@ import cn.hutool.core.clone.CloneSupport;
 import cn.hutool.core.clone.Cloneable;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.convert.ConverterRegistry;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.io.watch.WatchMonitor;
+import cn.hutool.core.io.watch.Watcher;
+import cn.hutool.core.io.watch.watchers.DelayWatcher;
+import cn.hutool.core.lang.Console;
+import cn.hutool.core.lang.Dict;
+import cn.hutool.core.lang.Validator;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.swing.clipboard.ImageSelection;
+import cn.hutool.core.util.*;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.http.ContentType;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import pwd.allen.http.HttpUtil;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 官方文档：https://hutool.cn/docs
@@ -111,9 +130,86 @@ public class HuToolTest implements Serializable {
         System.out.println(ClipboardUtil.getStr());
 
         //将图片放到剪切板
+        ClipboardUtil.setImage(CaptchaUtil.createCircleCaptcha(500, 300).createImage("沙雕up233"));
     }
 
+    /**
+     * 文件监听，基于jdk7的WatchService
+     * @throws InterruptedException
+     */
+    @Test
+    public void fileMonitor() throws InterruptedException {
+        File file = new File("C:\\Users\\lenovo\\Desktop\\200327");
+        //监听文件或目录的所有事件
+        WatchMonitor watchMonitor = WatchMonitor.create(file, WatchMonitor.EVENTS_ALL);
 
+        //实现一个监听器
+        Watcher watcher = new Watcher() {
+            @Override
+            public void onCreate(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("创建：{}-> {}", currentPath, obj);
+            }
+
+            @Override
+            public void onModify(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("修改：{}-> {}", currentPath, obj);
+            }
+
+            @Override
+            public void onDelete(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("删除：{}-> {}", currentPath, obj);
+            }
+
+            @Override
+            public void onOverflow(WatchEvent<?> event, Path currentPath) {
+                Object obj = event.context();
+                Console.log("Overflow：{}-> {}", currentPath, obj);
+            }
+        };
+
+        //注册监听器，并加上延迟，此类通过维护一个Set将短时间内相同文件多次modify的事件合并处理触发
+        watchMonitor.setWatcher(new DelayWatcher(watcher, 500));
+
+        //设置监听目录的最大深入，目录层级大于制定层级的变更将不被监听，默认只监听当前层级目录
+        watchMonitor.setMaxDepth(3);
+        //启动监听
+        watchMonitor.start();
+
+        TimeUnit.SECONDS.sleep(100);
+    }
+
+    @Test
+    public void runtime() {
+        System.out.println("--------------ipconfig----------------");
+        System.out.println(RuntimeUtil.execForStr("ipconfig"));
+
+        System.out.println("--------------netstat----------------");
+        Process exec = RuntimeUtil.exec("netstat -ano");
+        System.out.println(IoUtil.read(exec.getInputStream()));
+    }
+
+    /**
+     * 灵活的KV结构
+     */
+    @Test
+    public void dict() {
+        Dict dict = new Dict();
+        dict.put("int", 123);
+        dict.put("float", 12.3f);
+        dict.put("string", "hello");
+
+        System.out.println(dict.getFloat("float"));
+        System.out.println(dict.getInt("int"));
+    }
+
+    @Test
+    public void validate() {
+        System.out.println(Validator.isCitizenId("440507199111111111"));
+        Validator.validateChinese("this is China！", "检验到字符串存在中文");
+    }
 
     @Data
     @AllArgsConstructor
@@ -122,5 +218,16 @@ public class HuToolTest implements Serializable {
         private String str;
         private Date date;
         private float f;
+    }
+
+    @Test
+    public void httpPost() {
+        HttpResponse response = HttpRequest.post("http://192.168.200.42/Control_API/abnormalEventCheck/selectByEventState")
+                .header("token", "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjZGNJZCIsImlhdCI6MTU5MTc3OTMwNSwic3ViIjoie1wiZW1wbG95ZWVOYW1lXCI6XCLlhoXmjqfnrqHnkIblkZhcIixcImNvbXBhbnlJZFwiOlwiNDQwMDAwMDAxXCIsXCJyb2xlSWRcIjpcImZmODA4MDgxNjY1N2FiMGIwMTY2N2ZjMjI2NDUwMDIzXCIsXCJyb2xlQ29kZVwiOlwiQ09OVFJPTF9NQU5BR0VFUlwiLFwidXNlclBvc2lJZFwiOlwiNDAyODQ4YWI2NWM2YzFkNzAxNjVkMWFmZTQyZDAwNzlcIixcImlkXCI6XCI0MDI4NDhhYjY1YzZjMWQ3MDE2NWQxYWZlNDBmMDA3OFwiLFwiZXhlbmRzU3FsXCI6XCIyXCIsXCJvcmdJZFwiOlwiNDQwMDAwMDAxXCIsXCJhY2NvdW50XCI6XCJjb250cm9sXCJ9IiwiZXhwIjoxNTkxODA5MzA1fQ.r3rPGJp3CWGkGdCNw9mSa8qbPDYyExQUTmvk6lDHTO0")
+//                .contentType(ContentType.JSON.toString())
+                .body("{\"userLevel\":\"\",\"logTimeStart\":\"\",\"logTimeEnd\":\"\",\"checkTimeStart\":\"\",\"checkTimeEnd\":\"\",\"department\":\"\",\"firstbRanch\":\"\"}")
+                .execute();
+
+        System.out.println(response.body());
     }
 }
