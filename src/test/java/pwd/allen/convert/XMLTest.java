@@ -1,4 +1,4 @@
-package convert;
+package pwd.allen.convert;
 
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ import java.util.*;
  * @author 门那粒沙
  * @create 2019-07-24 22:48
  **/
-public class PwdTest {
+public class XMLTest {
 
     @Test
     public void testXML() {

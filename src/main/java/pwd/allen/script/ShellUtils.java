@@ -12,14 +12,6 @@ import java.util.Arrays;
  **/
 public class ShellUtils {
 
-    public static void main(String[] args) {
-        String command = "cmd /c run\\start.bat";
-        System.out.println(Arrays.toString(exec(command, "GBK")));
-
-//        command = "sh run/start.sh &";
-//        System.out.println(Arrays.toString(exec(command, "GBK")));
-    }
-
     public static String[] exec(String command, String charset) {
         String str_info = null;
         String str_error = null;

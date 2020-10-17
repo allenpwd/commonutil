@@ -83,6 +83,14 @@ public class HuToolTest implements Serializable {
         System.out.println(clone1);
         System.out.println(myObj == clone1);
     }
+    @Data
+    @AllArgsConstructor
+    public class MyObj extends CloneSupport<MyObj> {
+        private int num;
+        private String str;
+        private Date date;
+        private float f;
+    }
 
     @Test
     public void convert() {
@@ -207,18 +215,10 @@ public class HuToolTest implements Serializable {
 
     @Test
     public void validate() {
-        System.out.println(Validator.isCitizenId("440507199111111111"));
+        System.out.println("校验身份证：" + Validator.isCitizenId("440607199101011234"));
         Validator.validateChinese("this is China！", "检验到字符串存在中文");
     }
 
-    @Data
-    @AllArgsConstructor
-    public class MyObj extends CloneSupport<MyObj> {
-        private int num;
-        private String str;
-        private Date date;
-        private float f;
-    }
 
     @Test
     public void httpPost() {

@@ -1,4 +1,7 @@
+package pwd.allen.convert;
+
 import org.junit.Test;
+import pwd.allen.convert.EncryptUtil;
 
 /**
  * @author lenovo

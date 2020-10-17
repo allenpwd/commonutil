@@ -102,7 +102,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SFTP -->
+        <!-- SFTP需要用到 -->
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
@@ -123,7 +123,7 @@
             <version>3.2.11</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
+        <!-- FTP需要用到 -->
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
@@ -139,5 +139,22 @@
 
 
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>

@@ -1,4 +1,4 @@
-package pwd.allen.ftp;
+package pwd.allen.file;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
