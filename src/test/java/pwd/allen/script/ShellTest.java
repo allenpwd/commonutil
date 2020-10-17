@@ -11,7 +11,7 @@ import java.util.Arrays;
  * @author 门那粒沙
  * @create 2020-10-17 17:55
  **/
-public class ShellUtilsTest {
+public class ShellTest {
 
     private String command = "cmd /c run\\start.bat";
 //    private String command = "sh run/start.sh &";
