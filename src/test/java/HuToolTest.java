@@ -230,4 +230,13 @@ public class HuToolTest implements Serializable {
 
         System.out.println(response.body());
     }
+
+    /**
+     * 简易Http服务器
+     */
+    @Test
+    public void server() {
+
+    }
+
 }
