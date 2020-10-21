@@ -58,6 +58,9 @@ public class HutoolTest {
 //        int insert = db.insert(entity);
         Long key = db.insertForGeneratedKey(entity);
         System.out.println("插入成功，主键为：" + key);
+
+        // 插入或更新 先查询是否存在，存在则更新，否则插入
+        db.insertOrUpdate(entity, "id");
     }
 
     @Test
@@ -74,11 +77,41 @@ public class HutoolTest {
 
     @Test
     public void query() throws SQLException {
-        List<User> query = db.query("select * from db_user where age>?", User.class, 20);
-        System.out.println(query);
+        //<editor-fold desc="查询列表">
+        // 方式一
+//        List<User> list = db.query("select * from db_user where age>?", User.class, 20);
+        // 方式二
+        List<User> list = db.findAll(Entity.create("db_user").set("age", "> 20"), User.class);
+        System.out.println(list);
+        //</editor-fold>
 
-        User user = db.queryOne("select * from db_user where id=?", 1).toBeanWithCamelCase(new User());
+        // 查询单条记录
+        User user = db.queryOne("select * from db_user where id=?", 1)
+                .toBeanWithCamelCase(new User());
         System.out.println(user);
+
+        //<editor-fold desc="查询数量">
+//        System.out.println(db.queryNumber("select count(1) from db_user where age > ?", 20));
+        System.out.println(db.queryOne("select count(1) from db_user where age > ?", 20).getInt("count(1)"));
+        //</editor-fold>
+
+    }
+
+    @Test
+    public void update() throws SQLException {
+        Entity entity = Entity.create("db_user")
+                .parseBean(list.get(0), true, true);
+
+        Entity where = Entity.create().set("id", list.get(0).getId());
+        db.update(entity, where);
+    }
+
+    /**
+     * 事务
+     */
+    @Test
+    public void tx() {
+
     }
 
 }
