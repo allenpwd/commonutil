@@ -2,14 +2,34 @@ package pwd.allen.http;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpUtil;
 import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 门那粒沙
  * @create 2020-10-17 16:01
  **/
 public class HttpTest {
+
+    /**
+     * 简易Http服务器
+     */
+    @Test
+    public void server() throws InterruptedException {
+        HttpUtil.createServer(8888)
+                .setRoot(System.getProperty("user.home") + "\\Desktop\\")
+                // 返回JSON数据测试
+//                .addAction("/restTest", (request, response) ->
+//                        response.write("{\"id\": 1, \"msg\": \"OK\"}", ContentType.JSON.toString())
+//                )
+                .start();
+        while (Thread.activeCount() > 2) {
+            TimeUnit.SECONDS.sleep(1);
+        }
+    }
 
     @Test
     public void hutool() {

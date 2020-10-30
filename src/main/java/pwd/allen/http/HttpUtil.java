@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 推荐使用 hutool的HttpUtil
  * @create 2019-06-14 9:41
  **/
+@Deprecated
 public class HttpUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);

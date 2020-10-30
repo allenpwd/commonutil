@@ -17,6 +17,7 @@ import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import cn.hutool.core.swing.clipboard.ImageSelection;
 import cn.hutool.core.util.*;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -221,22 +222,8 @@ public class HuToolTest implements Serializable {
 
 
     @Test
-    public void httpPost() {
-        HttpResponse response = HttpRequest.post("http://192.168.200.42/Control_API/abnormalEventCheck/selectByEventState")
-                .header("token", "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjZGNJZCIsImlhdCI6MTU5MTc3OTMwNSwic3ViIjoie1wiZW1wbG95ZWVOYW1lXCI6XCLlhoXmjqfnrqHnkIblkZhcIixcImNvbXBhbnlJZFwiOlwiNDQwMDAwMDAxXCIsXCJyb2xlSWRcIjpcImZmODA4MDgxNjY1N2FiMGIwMTY2N2ZjMjI2NDUwMDIzXCIsXCJyb2xlQ29kZVwiOlwiQ09OVFJPTF9NQU5BR0VFUlwiLFwidXNlclBvc2lJZFwiOlwiNDAyODQ4YWI2NWM2YzFkNzAxNjVkMWFmZTQyZDAwNzlcIixcImlkXCI6XCI0MDI4NDhhYjY1YzZjMWQ3MDE2NWQxYWZlNDBmMDA3OFwiLFwiZXhlbmRzU3FsXCI6XCIyXCIsXCJvcmdJZFwiOlwiNDQwMDAwMDAxXCIsXCJhY2NvdW50XCI6XCJjb250cm9sXCJ9IiwiZXhwIjoxNTkxODA5MzA1fQ.r3rPGJp3CWGkGdCNw9mSa8qbPDYyExQUTmvk6lDHTO0")
-//                .contentType(ContentType.JSON.toString())
-                .body("{\"userLevel\":\"\",\"logTimeStart\":\"\",\"logTimeEnd\":\"\",\"checkTimeStart\":\"\",\"checkTimeEnd\":\"\",\"department\":\"\",\"firstbRanch\":\"\"}")
-                .execute();
-
-        System.out.println(response.body());
-    }
-
-    /**
-     * 简易Http服务器
-     */
-    @Test
-    public void server() {
-
+    public void mail() {
+        MailUtil.send("994266136@qq.com", "测试", "邮件来自Hutool测试", false);
     }
 
 }
