@@ -1,0 +1,6 @@
+
+<beans>
+    <bean id="id" class="java.lang.String">
+        <name>beanName</name>
+    </bean>
+</beans>
