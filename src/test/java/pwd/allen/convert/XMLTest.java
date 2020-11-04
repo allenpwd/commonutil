@@ -3,6 +3,8 @@ package pwd.allen.convert;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -59,7 +61,7 @@ public class XMLTest {
 
         Document doc = sb.build(XMLTest.class.getClassLoader().getResourceAsStream("xml/test.xml")); //构造文档对象
         Element root = doc.getRootElement(); //获取根元素HD
-        List list = root.getChildren("bean");//取名字为disk的所有元素
+        List list = root.getChildren("bean");//取名字为bean的所有元素
         for (int i = 0; i < list.size(); i++) {
             Element element = (Element) list.get(i);
             String id = element.getAttributeValue("id");
@@ -79,12 +81,17 @@ public class XMLTest {
     @Test
     public void hutool() throws JDOMException, IOException {
 
-        org.w3c.dom.Document doc = XmlUtil.parseXml(IoUtil.read(XMLTest.class.getClassLoader().getResourceAsStream("xml/test.xml"), "utf-8")); //构造文档对象
-        org.w3c.dom.Element root = doc.getDocumentElement();//获取根元素HD
-        NodeList list = root.getElementsByTagName("bean");//取名字为disk的所有元素
+        String xmlStr = IoUtil.read(XMLTest.class.getClassLoader().getResourceAsStream("xml/test.xml"), "utf-8");
 
-        List<org.w3c.dom.Element> bean = XmlUtil.getElements(root, "bean");
-        for (org.w3c.dom.Element element : bean) {
+        org.w3c.dom.Document doc = XmlUtil.parseXml(xmlStr); //构造文档对象
+        org.w3c.dom.Element root = doc.getDocumentElement();//获取根元素HD
+
+        // document转成字符串
+        System.out.println(XmlUtil.toStr(doc));
+
+        //取名字为bean的所有元素
+        List<org.w3c.dom.Element> beans = XmlUtil.getElements(root, "bean");
+        for (org.w3c.dom.Element element : beans) {
             String id = element.getAttribute("id");
             String clazz = element.getAttribute("class");
             String content = element.getTextContent();//取disk子元素capacity的内容
@@ -93,9 +100,16 @@ public class XMLTest {
             System.out.println(content);
         }
 
-        //
+        // 读取name元素内容
         System.out.println(XmlUtil.getByXPath("//bean[1]/name", doc, XPathConstants.STRING));
         System.out.println(XmlUtil.getByXPath("beans/bean[1]/name", doc, XPathConstants.STRING));
         System.out.println(XmlUtil.getByXPath("bean[1]/name", root, XPathConstants.STRING));
+        // 读取name元素属性
+        System.out.println(XmlUtil.getByXPath("bean[1]/@class", root, XPathConstants.STRING));
+
+
+        // 转 JSON对象
+        JSONObject jsonObject = JSONUtil.parseFromXml(xmlStr);
+        System.out.println(jsonObject.getByPath("beans.bean.name"));
     }
 }
