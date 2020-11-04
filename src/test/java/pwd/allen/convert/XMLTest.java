@@ -1,11 +1,17 @@
 package pwd.allen.convert;
 
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.XmlUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Test;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPathConstants;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -63,5 +69,33 @@ public class XMLTest {
             System.out.println(clazz);
             System.out.println(name);
         }
+    }
+
+    /**
+     * hutool 读取xml
+     * @throws JDOMException
+     * @throws IOException
+     */
+    @Test
+    public void hutool() throws JDOMException, IOException {
+
+        org.w3c.dom.Document doc = XmlUtil.parseXml(IoUtil.read(XMLTest.class.getClassLoader().getResourceAsStream("xml/test.xml"), "utf-8")); //构造文档对象
+        org.w3c.dom.Element root = doc.getDocumentElement();//获取根元素HD
+        NodeList list = root.getElementsByTagName("bean");//取名字为disk的所有元素
+
+        List<org.w3c.dom.Element> bean = XmlUtil.getElements(root, "bean");
+        for (org.w3c.dom.Element element : bean) {
+            String id = element.getAttribute("id");
+            String clazz = element.getAttribute("class");
+            String content = element.getTextContent();//取disk子元素capacity的内容
+            System.out.println(id);
+            System.out.println(clazz);
+            System.out.println(content);
+        }
+
+        //
+        System.out.println(XmlUtil.getByXPath("//bean[1]/name", doc, XPathConstants.STRING));
+        System.out.println(XmlUtil.getByXPath("beans/bean[1]/name", doc, XPathConstants.STRING));
+        System.out.println(XmlUtil.getByXPath("bean[1]/name", root, XPathConstants.STRING));
     }
 }
