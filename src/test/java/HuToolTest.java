@@ -2,10 +2,13 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.captcha.ICaptcha;
 import cn.hutool.captcha.ShearCaptcha;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.clone.CloneSupport;
 import cn.hutool.core.clone.Cloneable;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.convert.ConverterRegistry;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.io.watch.WatchMonitor;
 import cn.hutool.core.io.watch.Watcher;
@@ -92,6 +95,25 @@ public class HuToolTest implements Serializable {
         private Date date;
         private float f;
     }
+
+    /**
+     * 复制属性
+     */
+    @Test
+    public void copyProperty() {
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("num", 12);
+        paramMap.put("str", null);
+        paramMap.put("date", DateUtil.parse("2020-12-27", "yyyy-MM-dd"));
+        paramMap.put("f", "0.12");
+
+        MyObj obj = new MyObj(1, "str", new Date(), 0.1f);
+        System.out.println(obj);
+        BeanUtil.copyProperties(paramMap, obj, CopyOptions.create()
+                .setIgnoreNullValue(true));
+        System.out.println(obj);
+    }
+
 
     @Test
     public void convert() {
