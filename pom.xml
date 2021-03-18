@@ -140,7 +140,7 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>${hutool.version}</version>
+            <version>1.4.7</version>
         </dependency>
 
         <!--mysql驱动-->

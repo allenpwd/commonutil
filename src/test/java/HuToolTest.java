@@ -20,6 +20,7 @@ import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import cn.hutool.core.swing.clipboard.ImageSelection;
 import cn.hutool.core.util.*;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
@@ -245,7 +246,21 @@ public class HuToolTest implements Serializable {
 
     @Test
     public void mail() {
-        MailUtil.send("994266136@qq.com", "测试", "邮件来自Hutool测试", false);
+        MailAccount account = new MailAccount();
+        // 邮件服务器的SMTP地址，可选，默认为smtp.<发件人邮箱后缀>
+        account.setHost("smtp.126.com");
+        // 邮件服务器的SMTP端口，可选，默认25
+        account.setPort(465);
+        // 发件人（好像必须是发件人邮箱前缀，否则发送失败）
+        account.setFrom("panweidan@126.com");
+        // 用户名，默认为发件人邮箱前缀
+        account.setUser("panweidan");
+        // 密码（注意，某些邮箱需要为SMTP服务单独设置授权码，详情查看相关帮助）
+        account.setPass("YCLWHETVOOGDKFXU");
+        account.setAuth(true);
+        account.setSslEnable(true);
+
+        MailUtil.send(account, "994266136@qq.com", "测试", "邮件来自Hutool测试", false);
     }
 
 }
