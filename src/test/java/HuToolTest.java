@@ -244,6 +244,10 @@ public class HuToolTest implements Serializable {
     }
 
 
+    /**
+     * Caused by: com.sun.mail.smtp.SMTPSendFailedException: 554 DT:SPM 126 smtp1,C8mowAAXHlLAKFRgYqYwPg--.13400S2 1616128194
+     * please see http://mail.163.com/help/help_spam_16.htm?ip=61.144.96.109&hostid=smtp1&time=1616128194
+     */
     @Test
     public void mail() {
         MailAccount account = new MailAccount();
@@ -259,8 +263,14 @@ public class HuToolTest implements Serializable {
         account.setPass("YCLWHETVOOGDKFXU");
         account.setAuth(true);
         account.setSslEnable(true);
+        // 使用 STARTTLS安全连接，STARTTLS是对纯文本通信协议的扩展
+        account.setStarttlsEnable(true);
+        // 指定实现javax.net.SocketFactory接口的类的名称,这个类将被用于创建SMTP的套接字
+        account.setSocketFactoryClass("javax.net.ssl.SSLSocketFactory");
+        account.setTimeout(3000);
 
-        MailUtil.send(account, "994266136@qq.com", "测试", "邮件来自Hutool测试", false);
+        String messageId = MailUtil.send(account, "994266136@qq.com", "测试", "邮件来自Hutool测试", false);
+        System.out.println(messageId);
     }
 
 }
