@@ -75,6 +75,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- cxf -->
@@ -151,6 +152,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- 获取服务器状态数据 -->
+        <dependency>
+            <groupId>org.fusesource</groupId>
+            <artifactId>sigar</artifactId>
+            <version>1.6.4</version>
+        </dependency>
 
     </dependencies>
 

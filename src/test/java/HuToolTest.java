@@ -25,6 +25,7 @@ import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.ContentType;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.system.SystemUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.junit.Test;
@@ -221,6 +222,19 @@ public class HuToolTest implements Serializable {
         System.out.println("--------------netstat----------------");
         Process exec = RuntimeUtil.exec("netstat -ano");
         System.out.println(IoUtil.read(exec.getInputStream()));
+    }
+
+    /**
+     * 系统属性工具
+     */
+    @Test
+    public void system() {
+        System.out.println("--------Java Virtual Machine Specification信息---------");
+        System.out.println(SystemUtil.getJvmSpecInfo());
+        System.out.println("--------系统信息信息---------");
+        System.out.println(SystemUtil.getOsInfo());
+        System.out.println("--------Java运行时信息---------");
+        System.out.println(SystemUtil.getRuntimeInfo());
     }
 
     /**
