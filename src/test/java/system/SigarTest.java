@@ -1,7 +1,6 @@
 package system;
 
 import org.hyperic.sigar.*;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,8 +10,28 @@ import java.util.Properties;
 
 /**
  * sigar.jar的底层是用C语言编写的，它通过本地方法来调用操作系统API来获取系统相关数据
- * Windows操作系统下Sigar.jar 依赖sigar-amd64-winnt.dll或sigar-x86-winnt.dll
- * linux 操作系统下则依赖libsigar-amd64-linux.so或libsigar-x86-linux.so
+ *
+ * Linux AMD/Intel          32位            libsigar-x86-linux.so
+ * Linux AMD/Intel          64位            libsigar-amd64-linux.so
+ * Linux PowerPC            32位            libsigar-ppc-linux.so
+ * Linux PowerPC            64位            libsigar-ppc64-linux.so
+ * Linux Itanium            64位            libsigar-ia64-linux.so
+ * Linux zSeries            64位            libsigar-s390x-linux.so
+ * Windows AMD/Intel        32位            sigar-x86-winnt.dll
+ * Windows AMD/Intel        64位            sigar-amd64-winnt.dll
+ * AIX PowerPC              32位            libsigar-ppc-aix-5.so
+ * AIX PowerPC              64位            libsigar-ppc64-aix-5.so
+ * HP-UX PA-RISC            32位            libsigar-pa-hpux-11.sl
+ * HP-UX Itanium            64位            libsigar-ia64-hpux-11.sl
+ * Solaris Sparc            32位            libsigar-sparc-solaris.so
+ * Solaris Sparc            64位            libsigar-sparc64-solaris.so
+ * Solaris AMD/Intel        32位            libsigar-x86-solaris.so
+ * Solaris AMD/Intel        64位            libsigar-amd64-solaris.so
+ * Mac OS X PowerPC/Intel   32位            libsigar-universal-macosx.dylib
+ * Mac OS X PowerPC/Intel   64位            libsigar-universal64-macosx.dylib
+ * FreeBSD 5.x AMD/Intel    32位            libsigar-x86-freebsd-5.so
+ * FreeBSD 6.x AMD/Intel    64位            libsigar-x86-freebsd-6.so
+ * FreeBSD 6.x AMD/Intel    64位            libsigar-amd64-freebsd-6.so
  *
  * @author pwdan
  * @create 2021-03-23 10:23
