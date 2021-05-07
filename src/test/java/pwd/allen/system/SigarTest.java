@@ -1,4 +1,4 @@
-package system;
+package pwd.allen.system;
 
 import org.hyperic.sigar.*;
 import org.junit.Test;
