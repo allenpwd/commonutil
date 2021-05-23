@@ -1,12 +1,16 @@
 package pwd.allen.script;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.script.ScriptUtil;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.junit.Test;
 
 import javax.script.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 常用的表达式引擎计算方案，包含：java脚本引擎（javax/script）、groovy脚本引擎、Expression4j、Fel表达式引擎。
@@ -94,5 +98,25 @@ public class ScriptTest {
         scriptContext.setAttribute("param", paramMap, ScriptContext.ENGINE_SCOPE);
         Object eval = ScriptUtil.eval("param.put('name','fuck');return param.get('name');");
         System.out.println(eval);
+    }
+
+    /**
+     * 需要引入groovy工具包
+     */
+    @Test
+    public void groovy() {
+        Map<String, Object> paramMap = MapUtil.<String, Object>builder("int", 1)
+                .put("str", "hello world")
+                .build();
+
+        String script = "param.str+='!amazing';param.int+=Integer.parseInt('100');";
+
+        Binding binding = new Binding();
+        GroovyShell shell = new GroovyShell(binding);
+        binding.setVariable("param", paramMap);
+        // 如果没有return语句，则返回值为最后一句执行的语句的结果
+        System.out.println(shell.evaluate(script));
+
+        System.out.println(paramMap);
     }
 }

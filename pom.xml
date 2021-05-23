@@ -159,6 +159,13 @@
             <version>1.6.4</version>
         </dependency>
 
+        <!--groovy工具包，使用其脚本引擎-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>2.3.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>
