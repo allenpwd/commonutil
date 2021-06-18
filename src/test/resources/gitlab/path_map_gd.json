@@ -1,0 +1,19 @@
+{
+  "Shardbatis": "1",
+  "S_Information/Information_Service": "1",
+  "S_Merit/Merit_Service": "1",
+  "S_Sso/Sso_Service": "1",
+  "S_Assist/Assist_Service": "2",
+  "S_ToCustomer/ToCustomer_Service": "2",
+  "Quota_API": "2",
+  "S_ToCompany/ToCompany_Service": "3",
+  "exportCenter": "3",
+  "S_Detection/Detection_Service": "2",
+  "S_Quota/Quota_Service": "1",
+  "Merit_API": "2",
+  "Detection_API": "3",
+  "ToPublic_API": "3",
+  "ToCompany_API": "3",
+  "S_Quartz/Quartz_Service": "3",
+  "ToCustomer_API": "3"
+}

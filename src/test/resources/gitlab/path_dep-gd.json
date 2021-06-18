@@ -1,0 +1,52 @@
+{
+  "exportCenter": [
+    "S_ToCompany/ToCompany_Service",
+    "S_ToCustomer/ToCustomer_Service",
+    "S_Assist/Assist_Service"
+  ],
+  "S_ToCompany/ToCompany_Service": [
+    "S_Assist/Assist_Service",
+    "S_Information/Information_Service"
+  ],
+  "S_ToCustomer/ToCustomer_Service": [
+    "S_Information/Information_Service"
+  ],
+  "Quota_API": [
+    "S_Quota/Quota_Service"
+  ],
+  "S_Detection/Detection_Service": [
+    "S_Information/Information_Service"
+  ],
+  "Merit_API": [
+    "S_Merit/Merit_Service"
+  ],
+  "Detection_API": [
+    "S_Detection/Detection_Service",
+    "S_Information/Information_Service"
+  ],
+  "ToPublic_API": [
+    "S_ToCompany/ToCompany_Service",
+    "S_ToCustomer/ToCustomer_Service",
+    "S_Assist/Assist_Service",
+    "S_Sso/Sso_Service",
+    "S_Information/Information_Service"
+  ],
+  "ToCompany_API": [
+    "S_ToCompany/ToCompany_Service",
+    "S_Assist/Assist_Service",
+    "S_Information/Information_Service"
+  ],
+  "S_Assist/Assist_Service": [
+    "S_Information/Information_Service"
+  ],
+  "S_Quartz/Quartz_Service": [
+    "S_Merit/Merit_Service",
+    "S_ToCompany/ToCompany_Service",
+    "S_ToCustomer/ToCustomer_Service"
+  ],
+  "ToCustomer_API": [
+    "S_ToCompany/ToCompany_Service",
+    "S_ToCustomer/ToCustomer_Service",
+    "S_Assist/Assist_Service"
+  ]
+}

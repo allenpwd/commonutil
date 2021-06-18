@@ -13,12 +13,17 @@ import cn.hutool.core.io.watch.watchers.DelayWatcher;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.map.MapBuilder;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.swing.clipboard.ClipboardUtil;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RuntimeUtil;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
+import cn.hutool.extra.template.Template;
+import cn.hutool.extra.template.TemplateConfig;
+import cn.hutool.extra.template.TemplateUtil;
 import cn.hutool.system.SystemUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,10 +35,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -276,6 +278,24 @@ public class HuToolTest implements Serializable {
 
         String messageId = MailUtil.send(account, "994266136@qq.com", "测试", "邮件来自Hutool测试", false);
         System.out.println(messageId);
+    }
+
+    @Test
+    public void map() {
+        MapBuilder<Object, Object> builder = MapUtil.builder();
+    }
+
+    /**
+     * 以文件形式处理模版
+     * 会根据引入的jar自动识别模板引擎
+     */
+    public void template() {
+        List<String> list = Arrays.asList("abc", "efg");
+        Template template = TemplateUtil
+                .createEngine(new TemplateConfig("templates", TemplateConfig.ResourceMode.CLASSPATH))
+                .getTemplate("template.xml");
+        String result = template.render(MapUtil.builder("list", list).build());
+        System.out.println(result);
     }
 
 }

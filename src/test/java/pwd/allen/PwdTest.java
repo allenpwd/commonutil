@@ -2,7 +2,9 @@ package pwd.allen;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * @author 门那粒沙
@@ -52,4 +54,6 @@ public class PwdTest {
         }
         return true;
     }
+
+
 }

@@ -1,0 +1,141 @@
+cache:
+  |
+    ##
+    .{path_one}:
+      only:
+        changes:
+    {cache}
+
+    ##
+
+
+all_build:
+  |
+    all_build:
+      stage: build1
+      extends:
+        - .javaTemplate
+      script:
+        ##
+        - if [ -d {path_one}/ ]; then mvn install -Dmaven.test.skip=true -f {path_one}/pom.xml; fi
+        ##
+      cache:
+        #不拉取该paths的缓存,只是存储缓存
+        policy: push
+        # 由于每个job执行前都会重新拉取分支代码,进行文件差异比较,多余的代码会被删除,因而需要缓存部分文件来进行部署、打包镜像之类的操作。
+        paths:
+          - ./**/target
+      when: manual
+
+
+build:
+  |
+    ##
+    {path_one}_build:
+      stage: build{num}
+      extends:
+        - .javaTemplate
+        - .{path_one}
+      script:
+        - mvn install -Dmaven.test.skip=true -f {path_one}/pom.xml
+      artifacts:
+        expire_in: 2 h
+        paths:
+          - {path}/target/*.jar
+          - {path}/target/lib
+      cache:
+        policy: push
+        paths:
+          - {path}/target
+
+    ##
+
+test:
+  |
+    ##
+    {path_one}_test:
+      stage: test
+      extends:
+        - .javaTemplate
+        - .{path_one}
+      script:
+        - mvn test -f {path_one}/pom.xml
+      needs:
+        - job: "{path_one}_build"
+      cache:
+        policy: pull
+        paths:
+          - {path}/target
+
+    ##
+
+sonar:
+  |
+    ##
+    {path_one}_sonar:
+      stage: sonarqube
+      extends:
+        - .javaTemplate
+        - .{path_one}
+      script:
+        - mvn compile sonar:sonar -f {path_one}/pom.xml
+            -Dsonar.projectKey=com.cndatacom:crm.abc.gd.service.{path_two_low}
+            -Dsonar.host.url=http://sonarqube.cndatacom.com
+            -Dsonar.projectName=农行_广东_{path_two_low}
+      needs:
+        - job: "{path_one}_test"
+      cache:
+        policy: pull
+        paths:
+          - {path}/target
+      allow_failure: true
+
+    ##
+
+
+dockerpackage:
+  |
+    ##
+    {path_one}_dockerpackage:
+      stage: dockerpackage
+      image: docker:latest
+      extends:
+        - .javaTemplate
+        - .{path_one}
+      script:
+        - docker build -t "${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}" -f {path}/Dockerfile ./{path}/
+      needs:
+        - job: "{path_one}_build"
+          artifacts: true
+      cache:
+        policy: pull
+        paths:
+          - {path}/target
+      when: manual
+
+    ##
+
+deploy:
+  |
+    ##
+    {path_one}_deploy:
+      stage: deploy
+      extends:
+        - .javaTemplate
+        - .{path_one}
+      script:
+        #登录
+        - docker login $CI_PAAS -u $CI_PAAS_USER -p $CI_PAAS_PASSWD
+        #推送到蓝鲸平台后删除本地镜像
+        - docker push ${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}
+        - docker logout
+        - docker rmi ${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}
+      needs:
+        - job: "{path_one}_dockerpackage"
+      cache:
+        policy: pull
+        paths:
+          - {path}/target
+      when: manual
+
+    ##

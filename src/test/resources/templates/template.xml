@@ -1,0 +1,10 @@
+<tr  th:each="obj,stat : ${list}">
+  <td th:text="${obj}">Onions</td>
+  <th th:text="${stat.index}">状态变量：index</th>
+  <th th:text="${stat.count}">状态变量：count</th>
+  <th th:text="${stat.size}">状态变量：size</th>
+  <th th:text="${stat.even}">状态变量：even****</th>
+  <th th:text="${stat.odd}">状态变量：odd</th>
+  <th th:text="${stat.first}">状态变量：first</th>
+  <th th:text="${stat.last}">状态变量：last</th>
+</tr>

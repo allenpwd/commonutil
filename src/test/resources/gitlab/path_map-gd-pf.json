@@ -1,0 +1,7 @@
+{
+  "Common": "1",
+  "S_File/File_Service": "2",
+  "S_Gateway/Gateway_Service": "3",
+  "Console_Api": "3",
+  "APIGateway": "4",
+}
