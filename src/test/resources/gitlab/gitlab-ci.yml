@@ -98,12 +98,11 @@ dockerpackage:
     ##
     {path_one}_dockerpackage:
       stage: dockerpackage
-      image: docker:latest
       extends:
         - .javaTemplate
         - .{path_one}
       script:
-        - docker build -t "${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}" -f {path}/Dockerfile ./{path}/
+        - ls -l {path}/target
       needs:
         - job: "{path_one}_build"
           artifacts: true
@@ -120,10 +119,12 @@ deploy:
     ##
     {path_one}_deploy:
       stage: deploy
+      image: docker:latest
       extends:
         - .javaTemplate
         - .{path_one}
       script:
+        - docker build -t "${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}" -f {path}/Dockerfile ./{path}/
         #登录
         - docker login $CI_PAAS -u $CI_PAAS_USER -p $CI_PAAS_PASSWD
         #推送到蓝鲸平台后删除本地镜像
@@ -131,6 +132,8 @@ deploy:
         - docker logout
         - docker rmi ${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}
       needs:
+        - job: "{path_one}_build"
+          artifacts: true
         - job: "{path_one}_dockerpackage"
       cache:
         policy: pull
