@@ -20,12 +20,9 @@ all_build:
         - if [ -d {path_one}/ ]; then mvn install -Dmaven.test.skip=true -f {path_one}/pom.xml; fi
         ##
       cache:
-        #不拉取该paths的缓存,只是存储缓存
-        policy: push
-        # 由于每个job执行前都会重新拉取分支代码,进行文件差异比较,多余的代码会被删除,因而需要缓存部分文件来进行部署、打包镜像之类的操作。
-        paths:
-          - ./**/target
+        <<: *maven_cache
       when: manual
+      allow_failure: true
 
 
 build:
@@ -41,12 +38,9 @@ build:
       artifacts:
         expire_in: 2 h
         paths:
-          - {path}/target/*.jar
-          - {path}/target/lib
-      cache:
-        policy: push
-        paths:
           - {path}/target
+      cache:
+        <<: *maven_cache
 
     ##
 
@@ -62,10 +56,10 @@ test:
         - mvn test -f {path_one}/pom.xml
       needs:
         - job: "{path_one}_build"
+          artifacts: false
       cache:
+        <<: *maven_cache
         policy: pull
-        paths:
-          - {path}/target
 
     ##
 
@@ -78,16 +72,15 @@ sonar:
         - .javaTemplate
         - .{path_one}
       script:
-        - mvn compile sonar:sonar -f {path_one}/pom.xml
-            -Dsonar.projectKey=com.cndatacom:crm.abc.gd.service.{path_two_low}
-            -Dsonar.host.url=http://sonarqube.cndatacom.com
+        - mvn test sonar:sonar -f {path_one}/pom.xml
+            -Dsonar.host.url=$URL_SONAR
             -Dsonar.projectName=农行_广东_{path_two_low}
+            -Dsonar.login=$SONAR_LOGIN_TOKEN
       needs:
         - job: "{path_one}_test"
       cache:
+        <<: *maven_cache
         policy: pull
-        paths:
-          - {path}/target
       allow_failure: true
 
     ##
@@ -105,11 +98,6 @@ dockerpackage:
         - ls -l {path}/target
       needs:
         - job: "{path_one}_build"
-          artifacts: true
-      cache:
-        policy: pull
-        paths:
-          - {path}/target
       when: manual
 
     ##
@@ -119,7 +107,8 @@ deploy:
     ##
     {path_one}_deploy:
       stage: deploy
-      image: docker:latest
+      tags:
+        - push-tag
       extends:
         - .javaTemplate
         - .{path_one}
@@ -133,12 +122,7 @@ deploy:
         - docker rmi ${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}
       needs:
         - job: "{path_one}_build"
-          artifacts: true
         - job: "{path_one}_dockerpackage"
-      cache:
-        policy: pull
-        paths:
-          - {path}/target
       when: manual
 
     ##

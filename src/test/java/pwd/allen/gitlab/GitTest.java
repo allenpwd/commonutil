@@ -24,13 +24,20 @@ public class GitTest {
 
     @Test
     public void gitlab_ci() {
-        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_map.json"));
+//        String path_map = "classpath:gitlab/path_map-gd-pf.json";
+//        String path_dep = "classpath:gitlab/path_dep-gd-pf.json";
+//        List<String> onlyBuilds = Arrays.asList("Common");
+
+        String path_map = "classpath:gitlab/path_map-gd.json";
+        String path_dep = "classpath:gitlab/path_dep-gd.json";
+        List<String> onlyBuilds = Arrays.asList("Shardbatis");
+
+
+        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String(path_map));
         Map<String, String> map_path = sortByComparator(jsonObject_path);
 
-        JSONObject jsonObject_dep = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_dep.json"));
+        JSONObject jsonObject_dep = JSONUtil.parseObj(FileUtil.readUtf8String(path_dep));
         Map<String, Set<String>> map_depByRecursion = getRelationByRecursion(jsonObject_dep);
-
-        List<String> onlyBuilds = Arrays.asList("Common");
 
         Yaml yaml = new Yaml();
         Map<String, String> load = (Map)yaml.load(FileUtil.getInputStream("classpath:gitlab/gitlab-ci.yml"));
@@ -171,7 +178,7 @@ public class GitTest {
 
     @Test
     public void sortByComparatorTest() {
-        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_map_gd.json"));
+        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_map-gd.json"));
         Map map = sortByComparator(jsonObject_path);
         System.out.println(map);
     }
