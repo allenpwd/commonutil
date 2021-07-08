@@ -14,13 +14,11 @@ all_build:
     all_build:
       stage: build1
       extends:
-        - .javaTemplate
+        - .buildTag
       script:
         ##
         - if [ -d {path_one}/ ]; then mvn install -Dmaven.test.skip=true -f {path_one}/pom.xml; fi
         ##
-      cache:
-        <<: *maven_cache
       when: manual
       allow_failure: true
 
@@ -31,37 +29,18 @@ build:
     {path_one}_build:
       stage: build{num}
       extends:
-        - .javaTemplate
+        - .buildTag
         - .{path_one}
       script:
         - mvn install -Dmaven.test.skip=true -f {path_one}/pom.xml
       artifacts:
         expire_in: 2 h
         paths:
-          - {path}/target
-      cache:
-        <<: *maven_cache
+          - {path}/target/lib
+          - {path}/target/*.jar
 
     ##
 
-test:
-  |
-    ##
-    {path_one}_test:
-      stage: test
-      extends:
-        - .javaTemplate
-        - .{path_one}
-      script:
-        - mvn test -f {path_one}/pom.xml
-      needs:
-        - job: "{path_one}_build"
-          artifacts: false
-      cache:
-        <<: *maven_cache
-        policy: pull
-
-    ##
 
 sonar:
   |
@@ -69,48 +48,28 @@ sonar:
     {path_one}_sonar:
       stage: sonarqube
       extends:
-        - .javaTemplate
+        - .sonarTag
         - .{path_one}
       script:
-        - mvn test sonar:sonar -f {path_one}/pom.xml
+        - mvn test -f {path_one}/pom.xml
+        - mvn sonar:sonar -f {path}/pom.xml
             -Dsonar.host.url=$URL_SONAR
             -Dsonar.projectName=农行_广东_{path_two_low}
             -Dsonar.login=$SONAR_LOGIN_TOKEN
       needs:
-        - job: "{path_one}_test"
-      cache:
-        <<: *maven_cache
-        policy: pull
+        - job: "{path_one}_build"
       allow_failure: true
 
     ##
 
-
-dockerpackage:
-  |
-    ##
-    {path_one}_dockerpackage:
-      stage: dockerpackage
-      extends:
-        - .javaTemplate
-        - .{path_one}
-      script:
-        - ls -l {path}/target
-      needs:
-        - job: "{path_one}_build"
-      when: manual
-
-    ##
 
 deploy:
   |
     ##
     {path_one}_deploy:
       stage: deploy
-      tags:
-        - push-tag
       extends:
-        - .javaTemplate
+        - .deployTag
         - .{path_one}
       script:
         - docker build -t "${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}" -f {path}/Dockerfile ./{path}/
@@ -122,7 +81,6 @@ deploy:
         - docker rmi ${PAAS_TAG_NAME_PREFIX}{path_two_low}:${TAG_NAME_SUFFIX}
       needs:
         - job: "{path_one}_build"
-        - job: "{path_one}_dockerpackage"
       when: manual
 
     ##
