@@ -1,8 +1,0 @@
-{
-  "S_SFTP/SFTP_Service": "1",
-  "S_Control/Control_Service": "1",
-  "S_Convert/Convert_Service": "1",
-  "S_Quartz/Quartz_Service": "1",
-  "exportCenter": "2",
-  "Control_API": "2"
-}

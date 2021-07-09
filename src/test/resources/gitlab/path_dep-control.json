@@ -1,21 +1,10 @@
 {
-  "Console_Api": [
-    "Common",
-    "S_BusinessCenter/BusinessCenter_Service"
+  "exportCenter": [
+    "S_Control/Control_Service"
   ],
-  "S_File/File_Service": [
-    "Common"
-  ],
-  "APIGateway": [
-    "S_File/File_Service",
-    "S_Gateway/Gateway_Service",
-    "Common"
-  ],
-  "S_Gateway/Gateway_Service": [
-    "S_File/File_Service",
-    "Common"
-  ],
-  "S_BusinessCenter/BusinessCenter_Service": [
-    "Common"
+  "Control_API": [
+    "S_SFTP/SFTP_Service",
+    "S_Control/Control_Service",
+    "S_Quartz/Quartz_Service"
   ]
 }

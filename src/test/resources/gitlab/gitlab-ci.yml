@@ -46,7 +46,7 @@ sonar:
   |
     ##
     {path_one}_sonar:
-      stage: sonarqube
+      stage: test scan
       extends:
         - .sonarTag
         - .{path_one}
@@ -54,7 +54,8 @@ sonar:
         - mvn test -f {path_one}/pom.xml
         - mvn sonar:sonar -f {path}/pom.xml
             -Dsonar.host.url=$URL_SONAR
-            -Dsonar.projectName=农行_广东_{path_two_low}
+            -Dsonar.projectKey=${SONAR_KEY}:{path_two_low}
+            -Dsonar.projectName=${SONAR_NAME}_{path_two_low}
             -Dsonar.login=$SONAR_LOGIN_TOKEN
       needs:
         - job: "{path_one}_build"
@@ -67,7 +68,7 @@ deploy:
   |
     ##
     {path_one}_deploy:
-      stage: deploy
+      stage: package deploy
       extends:
         - .deployTag
         - .{path_one}

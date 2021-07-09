@@ -1,0 +1,21 @@
+{
+  "Console_Api": [
+    "Common",
+    "S_BusinessCenter/BusinessCenter_Service"
+  ],
+  "S_File/File_Service": [
+    "Common"
+  ],
+  "APIGateway": [
+    "S_File/File_Service",
+    "S_Gateway/Gateway_Service",
+    "Common"
+  ],
+  "S_Gateway/Gateway_Service": [
+    "S_File/File_Service",
+    "Common"
+  ],
+  "S_BusinessCenter/BusinessCenter_Service": [
+    "Common"
+  ]
+}

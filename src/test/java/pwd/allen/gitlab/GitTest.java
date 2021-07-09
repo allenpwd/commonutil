@@ -27,10 +27,16 @@ public class GitTest {
 //        String path_map = "classpath:gitlab/path_map-gd-pf.json";
 //        String path_dep = "classpath:gitlab/path_dep-gd-pf.json";
 //        List<String> onlyBuilds = Arrays.asList("Common");
-
         String path_map = "classpath:gitlab/path_map-gd.json";
         String path_dep = "classpath:gitlab/path_dep-gd.json";
         List<String> onlyBuilds = Arrays.asList("Shardbatis");
+
+//        String path_map = "classpath:gitlab/path_map-control-pf.json";
+//        String path_dep = "classpath:gitlab/path_dep-control-pf.json";
+//        List<String> onlyBuilds = Arrays.asList("Common");
+//        String path_map = "classpath:gitlab/path_map-control.json";
+//        String path_dep = "classpath:gitlab/path_dep-control.json";
+//        List<String> onlyBuilds = Arrays.asList("");
 
 
         JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String(path_map));
@@ -125,7 +131,7 @@ public class GitTest {
         System.out.println(JSONUtil.toJsonPrettyStr(getRelations()));
     }
     public static Map<String, Set<String>> getRelations() {
-        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_map.json"));
+        JSONObject jsonObject_path = JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_map-control.json"));
         Map<String, String> map_path = sortByComparator(jsonObject_path);
 
         HashMap<String, Set<String>> map = new HashMap<>();
@@ -153,7 +159,7 @@ public class GitTest {
 
     @Test
     public void getRelations2Test() {
-        System.out.println(JSONUtil.toJsonPrettyStr(getRelationByRecursion(JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_dep.json")))));
+        System.out.println(JSONUtil.toJsonPrettyStr(getRelationByRecursion(JSONUtil.parseObj(FileUtil.readUtf8String("classpath:gitlab/path_dep-control.json")))));
     }
     public static Map<String, Set<String>> getRelationByRecursion(JSONObject jsonObject_dep) {
         HashMap<String, Set<String>> map_rel = new HashMap<>();
