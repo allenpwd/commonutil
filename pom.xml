@@ -196,6 +196,76 @@
                 </includes>
             </resource>
         </resources>
+
+        <plugins>
+            <!-- 研究下打成可以执行Jar -->
+            <!-- 方法一：依赖包放到一个目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 默认${project.build.directory}/dependency -->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeTypes>jar</includeTypes>
+                            <type>jar</type>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- 指定打包进jar的classes和resources所在目录，默认${project.build.outputDirectory} -->
+                    <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                    <archive>
+                        <manifest>
+                            <mainClass>pwd.allen.Main</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                        <!-- 向Class-Path追加内容，即使不指定.也是能正常调用自身的类 -->
+                        <!--<manifestEntries>
+                            <Class-Path>.</Class-Path>
+                        </manifestEntries>-->
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- 方式二：将依赖打包进jar中 -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <!--<version>3.0.0</version>-->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>pwd.allen.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <!-- 以下配置作用是：mvn package即可打包；如果不指定，则打包命令为：mvn assembly:assembly -->
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
+
 
 </project>
